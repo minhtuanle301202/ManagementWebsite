@@ -38,7 +38,7 @@
 </template>
 <script setup>
 import { BellOutlined,MailOutlined,LogoutOutlined } from '@ant-design/icons-vue';
-import {ref,onMounted} from 'vue';
+import {ref,onMounted, onBeforeUnmount} from 'vue';
 import {getAllNotifications,logout } from '@/API';
 import dayjs from 'dayjs';
 import { useRouter } from 'vue-router';
@@ -47,9 +47,11 @@ const router = useRouter();
 const notifications = ref([]);
 const openDrawer = ref(false);
 const numberOfNotifications = ref(0);
+let interval = null;
+
 const showDrawer = () => {
     numberOfNotifications.value = 0;
-    localStorage.setItem("currentTotal",numberOfNotifications.value); 
+    localStorage.setItem("currentNotifications",numberOfNotifications.value); 
     openDrawer.value = true;
 }
 
@@ -65,20 +67,35 @@ const handleLogout = async () => {
         console.log(err);
     }
 }
- 
-onMounted(async () => {
-    const data = await getAllNotifications();
+const fetchNotificationData = async () => {
+     const data = await getAllNotifications();
     const notificationsData = data.notifications;
-    if (!localStorage.getItem("currentTotal")) {
+    if (!localStorage.getItem("currentNotifications")) {
         numberOfNotifications.value = notificationsData.length;
-        localStorage.setItem("currentTotal",numberOfNotifications.value);
-        localStorage.setItem("oldTotal",numberOfNotifications.value); 
+        localStorage.setItem("currentNotifications",numberOfNotifications.value);
+        localStorage.setItem("oldNotifications",numberOfNotifications.value); 
     } else {
-        const oldTotal = localStorage.getItem("oldTotal");
-        numberOfNotifications.value = notificationsData.length - oldTotal;
-        localStorage.setItem("oldTotal",notificationsData.length); 
+        let currentNotifications = localStorage.getItem("currentNotifications");
+        let oldNotifications = localStorage.getItem("oldNotifications");
+
+        if (currentNotifications > 0) {
+            currentNotifications = notificationsData.length - oldNotifications + currentNotifications;
+        } else {
+            currentNotifications = notificationsData.length - oldNotifications;
+        } 
+        numberOfNotifications.value = currentNotifications;
+        localStorage.setItem("oldNotifications",notificationsData.length); 
     }
     notifications.value = data.notifications;
+}
+ 
+onMounted(() => {
+    fetchNotificationData();
+    interval = setInterval(fetchNotificationData,30000);
+});
+
+onBeforeUnmount(() => {
+    clearInterval(interval);
 })
 
 </script>

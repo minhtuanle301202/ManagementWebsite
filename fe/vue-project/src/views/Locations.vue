@@ -85,7 +85,7 @@
 </template>
 
 <script setup>
-import {ref, onMounted, reactive} from 'vue';
+import {ref, onMounted, reactive, onBeforeMount, onBeforeUnmount} from 'vue';
 import { getAllMonitoringStatus } from '@/API';
 import { useRouter } from 'vue-router';
 import { SearchOutlined } from '@ant-design/icons-vue';
@@ -99,6 +99,8 @@ const state = reactive({
 const loading = ref(false);
 const tableData = ref([]);
 const searchInput = ref();
+
+let interval = null;
 
 const columns = [
     {
@@ -161,9 +163,7 @@ const columns = [
 
 ];
 
-
-
-onMounted(async () => {
+const fetchData = async () => {
     loading.value = true;
     try {
         const res = await getAllMonitoringStatus();
@@ -180,7 +180,16 @@ onMounted(async () => {
     } finally {
         loading.value = false;
     }
+}
+
+onMounted(() => {
+    fetchData();
+    interval = setInterval(fetchData,10000);
 });
+
+onBeforeUnmount(() => {
+    clearInterval(interval);
+})
 
 const parseLocation = (locationStr) => {
     const cleaned = locationStr.replace('[', '').replace(']', '').trim();
