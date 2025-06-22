@@ -63,6 +63,7 @@ router.beforeEach(async (to,from,next) => {
       }); 
       next();
     } catch (err) {
+      console.error('Auth check error:', err);
       next('/login');
     }
   } else {

@@ -19,7 +19,7 @@ exports.login = async (req,res) => {
         res.cookie('token',result.token, {
             httpOnly: true,
             sameSite: 'Lax',
-            secure: false,
+            secure: true,
             maxAge: 2*60*60*1000
         });
         res.status(200).json({ admin: result.admin,message:'Đăng nhập thành công' });
