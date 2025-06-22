@@ -18,7 +18,7 @@ exports.login = async (req,res) => {
         const result = await AdminService.login(username,password);
         res.cookie('token',result.token, {
             httpOnly: true,
-            sameSite: 'Lax',
+            sameSite: 'None',
             secure: true,
             maxAge: 2*60*60*1000
         });
