@@ -3,7 +3,7 @@ const router = express.Router();
 const adminControler = require('../controllers/AdminController');
 const middleware = require('../middleware/authMiddleware');
 const userController = require('../controllers/UserController');
-const userValidation = require('../validations/userValidation');
+const userValidation = require('../validations/UserValidation');
 const monitoringStatusController = require('../controllers/MonitoringStatusController');
 const notificationController = require('../controllers/NotificationController');
 
