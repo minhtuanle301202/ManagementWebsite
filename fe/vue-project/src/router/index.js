@@ -54,7 +54,11 @@ router.beforeEach(async (to,from,next) => {
 
   if (requiresAuth) {
     try {
-      await axios.get('http://localhost:3001/admin/check-auth', {
+      const api = axios.create({
+          baseURL: import.meta.env.VITE_BACKEND_URL,
+          withCredentials: true
+      });
+      await api.get('/admin/check-auth', {
         withCredentials: true
       }); 
       next();
