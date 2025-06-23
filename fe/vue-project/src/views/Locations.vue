@@ -90,6 +90,9 @@ import { getAllMonitoringStatus } from '@/API';
 import { useRouter } from 'vue-router';
 import { SearchOutlined } from '@ant-design/icons-vue';
 import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+
+dayjs.extend(utc)
 
 const router = useRouter();
 const state = reactive({
@@ -147,7 +150,7 @@ const columns = [
         width: 300,
         align: 'center',
         customRender: ({ text }) => {
-            return text ? dayjs(text).format('HH:mm:ss DD/MM/YYYY') : ''
+            return text ? dayjs.utc(text).format('HH:mm:ss DD/MM/YYYY') : ''
         }
     },
     {
@@ -157,7 +160,7 @@ const columns = [
         with: 300,
         align: 'center',
         customRender: ({ text }) => {
-            return text ? dayjs(text).format('HH:mm:ss DD/MM/YYYY') : ''
+            return text ? dayjs.utc(text).format('HH:mm:ss DD/MM/YYYY') : ''
         }
     }
 
@@ -172,8 +175,8 @@ const fetchData = async () => {
             cardId: item.user.cardId,
             fullName: item.user.fullName,
             location: `[${item.coordinates[0]}  ${item.coordinates[1]}]`,
-            lastUpdateLocationTime: new Date(item.lastUpdateLocationTime).toLocaleString(),
-            lastFaceVerifyTime: new Date(item.lastFaceVerifyTime).toLocaleString()
+            lastUpdateLocationTime: item.lastUpdateLocationTime,
+            lastFaceVerifyTime: item.lastFaceVerifyTime
         }))
     } catch(err) {
         console.log(err);
@@ -225,6 +228,8 @@ const handleReset = clearFilters => {
     });
     state.searchText = '';
 }
+
+
 
 </script>
 

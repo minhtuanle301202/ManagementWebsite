@@ -421,7 +421,7 @@ const onSubmitFormInfor = () => {
     formInforRef.value.validate().then(() => {
         step.value = 2;
     })
-    . catch(err => {
+    .catch(err => {
         console.log('err', err);
     }) 
 }
