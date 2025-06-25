@@ -76,7 +76,7 @@ function isPointInPolygon(polygon, point) {
         sum += calculateAngle(vectorA, vectorB);
     }
     
-    let vectorA = setVector(polygon[n - 1], point);
+    let vectorA = setVector(polygon[n], point);
     let vectorB = setVector(polygon[0], point);
     sum += calculateAngle(vectorA, vectorB);
     
