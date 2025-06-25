@@ -30,7 +30,7 @@
             <a-list :data-source="notifications" #renderItem="{item}">
                 <a-list-item class="list-item">
                     <p>{{ item.message }}</p> 
-                    <p>Cập nhật vào lúc: {{ dayjs(item.createdAt).format('DD/MM/YYYY HH:mm') }}</p>
+                    <p>Cập nhật vào lúc: {{ dayjs(item.createdAt).format('HH:mm DD/MM/YYYY') }}</p>
                 </a-list-item>  
             </a-list>
         </a-drawer>

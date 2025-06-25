@@ -43,10 +43,7 @@ exports.updateMonitoringStatus = async (userId,data) => {
             }
         }
         await newMonitoringStatus.save();
-        return {
-            newMonitoringStatus,
-            notification
-        };
+        return newMonitoringStatus;
     }
 }
 

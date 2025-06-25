@@ -1,19 +1,13 @@
 <template>
     <div class="locations">
         <a-space :size="20" direction="vertical">
-            <a-typography-title :level="4">Bảng trạng thái giám sát</a-typography-title>
+            <a-typography-title :level="3">Bảng trạng thái giám sát</a-typography-title>
             <a-table
                 :columns="columns"
-                table-layout="fixed"
                 :data-source="tableData"
                 :pagination="{pageSize: 4}"
-                :scroll="{ x: 'max-content' }"
                 row-key="_id"
                 :loading="loading"
-                :customRow="(record) => ({
-                    onClick: () => handleRowClick(record),
-                    style: { cursor: 'pointer' }
-                    })" 
             >
                 <template 
                     #customFilterDropdown = "{ setSelectedKeys, selectedKeys, confirm, clearFilters, column}"
@@ -61,8 +55,8 @@
                     <search-outlined :style="{ color: filtered ? '#108ee9' : undefined}"></search-outlined>
                 </template>
 
-                <template #bodyCell="{ text, column }">
-                    <span v-if="state.searchText && state.searchedColumn === column.dataIndex">
+                <template #bodyCell="{ text, column,record }">
+                    <template v-if="state.searchText && state.searchedColumn === column.dataIndex">
                         <template
                             v-for="(fragment, i) in text
                             .toString()
@@ -77,7 +71,13 @@
                             </mark>
                         <template v-else> {{ fragment }}</template>
                         </template>
-                    </span>
+                    </template>
+                    <template v-else-if="column.key==='location'">
+                        <div style="cursor: pointer;"
+                                @click="handleRowClick(record)">
+                            {{ record.location }}
+                        </div>
+                    </template>
                 </template>
             </a-table>
         </a-space>
@@ -89,8 +89,9 @@ import {ref, onMounted, reactive, onBeforeMount, onBeforeUnmount} from 'vue';
 import { getAllMonitoringStatus } from '@/API';
 import { useRouter } from 'vue-router';
 import { SearchOutlined } from '@ant-design/icons-vue';
-import dayjs from 'dayjs'
-import utc from 'dayjs/plugin/utc'
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import { h } from 'vue';
 
 dayjs.extend(utc)
 
@@ -110,8 +111,8 @@ const columns = [
         title:'Số CCCD',
         dataIndex:'cardId',
         key: 'cardId',
-        width: 150,
         customFilterDropdown: true,
+        width:150,
         onFilter: (value,record) => record.cardId.toString().toLowerCase().includes(value.toLowerCase()),
         onFilterDropdownOpenChange: visable => {
             if (visable) {
@@ -120,12 +121,12 @@ const columns = [
                 },100)
             }
         }
-    }   ,
+    },
     {
         title:'Họ và tên',
         dataIndex: 'fullName',
         key:'fullName',
-        width: 200,
+        width:220,
         customFilterDropdown: true,
         onFilter: (value,record) => record.fullName.toString().toLowerCase().includes(value.toLowerCase()),
         onFilterDropdownOpenChange: visable => {
@@ -140,27 +141,63 @@ const columns = [
         title:'Vị trí',
         dataIndex: 'location',
         key:'location',
-        width: 340
-
+        width:350,
     },
     {
         title: 'Thời gian cập nhật vị trí gần nhất',
         dataIndex: 'lastUpdateLocationTime',
         key: 'lastUpdateLocationTime',
-        width: 300,
         align: 'center',
+        width:280,
         customRender: ({ text }) => {
-            return text ? dayjs.utc(text).format('HH:mm:ss DD/MM/YYYY') : ''
-        }
+            if (!text) return '';
+
+            const now = dayjs().utc();
+            const lastUpdate = dayjs.utc(text);
+            const diffInSeconds= now.diff(lastUpdate, 'minute');
+            const isTooOld = diffInSeconds > 3;
+            console.log(now,lastUpdate);
+            const formatted = dayjs.utc(text).format('HH:mm:ss DD/MM/YYYY');
+
+            return h(
+                'span',
+                {
+                    style: {
+                        color: isTooOld ? 'red' : 'inherit',
+                        fontWeight: isTooOld ? 'bold' : 'normal',
+                    },
+                },
+                formatted
+            );
+        },
     },
     {
         title: 'Thời gian xác thực khuôn mặt gần nhất',
         dataIndex: 'lastFaceVerifyTime',
         key: 'lastFaceVerifyTime',
-        with: 300,
         align: 'center',
+        width:320,
         customRender: ({ text }) => {
-            return text ? dayjs.utc(text).format('HH:mm:ss DD/MM/YYYY') : ''
+            if (!text) return '';
+
+            const now = dayjs().utc();
+            const lastUpdate = dayjs.utc(text);
+            const diffInHours = now.diff(lastUpdate,'hour');
+            const isTooOld = diffInHours > 12;
+
+        
+            const formatted = dayjs.utc(text).format('HH:mm:ss DD/MM/YYYY');
+
+            return h(
+                'span',
+                {
+                    style: {
+                    color: isTooOld ? 'red' : 'inherit',
+                    fontWeight: isTooOld ? 'bold' : 'normal',
+                    },
+                },
+                formatted
+            );
         }
     }
 
@@ -239,19 +276,27 @@ const handleReset = clearFilters => {
   border-bottom: 1px solid #ededed !important;
 }
 
-.ant-table-thead > tr > th {
-    font-size: 15px;
-    font-weight: bold;
+.locations .ant-table-thead .ant-table-cell {
+    font-size: 16px;
+    font-weight: 600 !important;
 }
 
-.ant-table-column-title {
-    font-size: 14px;
-    font-weight: bold;
+.locations .ant-table-thead .ant-table-column-title {
+    font-size: 16px;
+    font-weight: 600 !important;
+}
+
+.locations .ant-table-row .ant-table-cell {
+    font-size: 14.5px;
 }
 
 .highlight {
     background-color: rgb(255, 192, 105);
     padding: 0px;
+}
+
+.locations {
+    margin-left: 15px;
 }
 
 </style>

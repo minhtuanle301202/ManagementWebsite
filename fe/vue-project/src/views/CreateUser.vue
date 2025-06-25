@@ -1,7 +1,7 @@
 <template>
     <div class="create-user">
         <a-space :size="20" style="margin-left: 200px;" direction="vertical">
-        <a-typography-title :level="4" style="margin-left: 100px ;">Tạo người  dùng mới</a-typography-title>
+        <a-typography-title :level="3" style="margin-left: 100px ;">Tạo người  dùng mới</a-typography-title>
         <div v-show="step === 1">
         <a-form
             ref="formInforRef"

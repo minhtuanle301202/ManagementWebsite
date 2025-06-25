@@ -14,8 +14,8 @@ exports.createMonitoringStatus = async (req,res) => {
 exports.updateMonitoringStatus = async (req,res) => {
     try {
         const userId = req.body.user;
-        const result = await MonitoringStatusService.updateMonitoringStatus(userId,req.body);
-        res.status(200).json({message:'Cập nhật vị trí thành công',result});
+        const newMonitoringStatus = await MonitoringStatusService.updateMonitoringStatus(userId,req.body);
+        res.status(200).json(newMonitoringStatus);
     } catch(err) {
         res.status(400).json({message: err.message});
     }

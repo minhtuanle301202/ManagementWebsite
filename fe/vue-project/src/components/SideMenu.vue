@@ -46,7 +46,7 @@ watch(() => route.path,(newPath,oldPath) => {
 
 </script>
 
-<style setup>
+<style>
 .side-menu {
     position: relative;
     z-index: 1;
@@ -54,5 +54,17 @@ watch(() => route.path,(newPath,oldPath) => {
 
 .side-menu-vertical {
     height: 100%;
+}
+
+.side-menu .ant-menu {
+    border-right: 2px solid rgba(5, 5, 5, 0.06) !important ;
+}
+
+.side-menu .ant-menu .ant-menu-item .ant-menu-title-content {
+    font-size: 15px;
+}
+
+.side-menu .ant-menu .ant-menu-item .ant-menu-item-icon {
+    font-size: 17px;
 }
 </style>
